@@ -5,7 +5,6 @@ import app from "./app";
 const startUp = async () => {
   // To create a secret by Kubernetes and then to specify it in a manifest
   console.log("Auth service starting up...");
-  console.log("adding other console!! :)!!");
   if (!process.env.JWT_KEY) throw new Error("JWT_KEY must be defined");
 
   try {
