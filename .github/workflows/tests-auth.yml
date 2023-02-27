@@ -5,12 +5,14 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened]
     paths:
-      - 'auth/**'
+      - "auth/**"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps: 
+    outputs:
+      status: ${{ job.status }}
+    steps:
       - uses: actions/checkout@v2
       - name: Install dependencies and Run Test
         run: cd auth && npm ci && npm run test:ci
