@@ -10,15 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      status: ${{ job.status }}
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies and Run Test
         run: cd auth && npm ci && npm run test:ci
-      - name: Set status
-        uses: github/status
-        with:
-          state: ${{ job.status }}
-          description: "The build and tests passed successfully."
-          context: "continuous-integration/my-ci"
