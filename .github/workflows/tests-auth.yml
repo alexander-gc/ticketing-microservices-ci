@@ -23,4 +23,4 @@ jobs:
       - name: Install dependencies
         run: cd auth && npm ci
       - name: Run Test
-        run: npm run test:ci
+        run: cd auth && npm run test:ci
