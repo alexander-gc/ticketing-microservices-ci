@@ -10,17 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      status: ${{ job.status }}
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies and Run Test
         run: cd auth && npm ci && npm run test:ci
-      - name: Set status
-        if: always()
-        run: echo "::set-output name=status::${{ job.status }}"
-
-  outputs:
-    needs: [build]
-    outputs:
-      status: ${{ job.status }}
