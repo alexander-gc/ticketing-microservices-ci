@@ -6,6 +6,10 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - "auth/**"
+  push:
+    branches: [main]
+    paths:
+      - "auth/**"
 
 jobs:
   avoid_reduncy:
@@ -24,3 +28,11 @@ jobs:
         run: cd auth && npm ci
       - name: Run Test
         run: cd auth && npm run test:ci
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to AWS
+        if: ${{ github.event_name == 'push' }}
+        run: echo "Starting deployment to AWS"
