@@ -32,7 +32,7 @@ jobs:
         run: cd auth && npm run test:ci
 
   deploy_aws:
-    if: ${{ github.event_name == 'push' && github.ref == "refs/heads/main" }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     needs: [build]
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +40,7 @@ jobs:
         run: echo "Starting deployment to AWS"
 
   deploy_heroku:
-    if: ${{ github.event_name == 'push' && github.ref == "refs/heads/develop" }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
     needs: [build]
     runs-on: ubuntu-latest
     steps:
