@@ -33,7 +33,7 @@ jobs:
 
   deploy_aws:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    needs: [build]
+    #needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to AWS
@@ -41,7 +41,7 @@ jobs:
 
   deploy_heroku:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-    needs: [build]
+    #needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Heroku
