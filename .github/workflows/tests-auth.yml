@@ -2,17 +2,18 @@ name: tests-auth
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, develop]
     types: [opened, synchronize, reopened]
     paths:
       - "auth/**"
   push:
-    branches: [main]
+    branches: [main, develop]
     paths:
       - "auth/**"
 
 jobs:
   avoid_reduncy:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-18.04
     steps:
       - name: Cancel Previous Redundant Builds
@@ -21,6 +22,7 @@ jobs:
           access_token: ${{ github.token }}
 
   build:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -29,10 +31,18 @@ jobs:
       - name: Run Test
         run: cd auth && npm run test:ci
 
-  deploy:
+  deploy_aws:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to AWS
-        if: ${{ github.event_name == 'push' }}
         run: echo "Starting deployment to AWS"
+
+  deploy_heroku:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Heroku
+        run: echo "Starting deployment to Heroku"
