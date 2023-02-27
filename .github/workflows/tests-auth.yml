@@ -21,4 +21,6 @@ jobs:
         run: echo "::set-output name=status::${{ job.status }}"
 
   outputs:
-    status: ${{ steps.set_status.outputs.status }}
+    needs: [build]
+    outputs:
+      status: ${{ job.status }}
