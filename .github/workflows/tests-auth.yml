@@ -17,8 +17,8 @@ jobs:
       - name: Install dependencies and Run Test
         run: cd auth && npm ci && npm run test:ci
       - name: Set status
-        uses: github/status@v1
-        with:
-          state: ${{ job.status }}
-          description: "The build and tests passed successfully."
-          context: "continuous-integration/my-ci"
+        if: always()
+        run: echo "::set-output name=status::${{ job.status }}"
+
+  outputs:
+    status: ${{ steps.set_status.outputs.status }}
