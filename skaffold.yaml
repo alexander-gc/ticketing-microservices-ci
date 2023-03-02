@@ -17,6 +17,15 @@ build:
         manual:
           - src: "server/**/*.ts"
             dest: .
+    - image: alexander-gc/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+        target: tickets
+      sync:
+        manual:
+          - src: "server/**/*.ts"
+            dest: .
     - image: alexander-gc/client
       context: client
       docker:
