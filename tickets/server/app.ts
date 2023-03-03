@@ -2,9 +2,12 @@ import express, { Request, Response } from "express";
 import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
-
-import { errorHandler } from "@alexandergcorg/common";
-import { NotFoundError } from "@alexandergcorg/common";
+import {
+  errorHandler,
+  NotFoundError,
+  currentUser,
+} from "@alexandergcorg/common";
+import { createTicketRouter } from "./routes/create-ticket";
 
 const app = express();
 app.set("trust proxy", true);
@@ -15,13 +18,14 @@ app.use(
     secure: process.env.NODE_ENV !== "test",
   })
 );
-// secure means that cookies will only be shared when the request is HTTPS
 
-/*app.use("/api/users/currentUser", currentUserRouter);
+app.use(currentUser); // req.currentUser = {} || null
 
-app.get("/api/users/home", (req, res) => {
+app.use("/api/tickets/create", createTicketRouter);
+
+app.get("/api/tickets/home", (req, res) => {
   res.status(200).send("Hi there!");
-});*/
+});
 
 app.all("*", async (req: Request, res: Response) => {
   throw new NotFoundError();
