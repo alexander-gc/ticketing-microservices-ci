@@ -19,7 +19,7 @@ app.use(
   })
 );
 
-app.use(currentUser); // req.currentUser = {} || null
+app.use(currentUser); // req.user = { id, email } || null
 
 app.use("/api/tickets/create", createTicketRouter);
 
