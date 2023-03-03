@@ -39,6 +39,14 @@ const data = [
   { path: "Dockerfile", type: "file" },
   { path: ".dockerignore", type: "file" }
 ]
+
+for (const value of data) {
+  if (value.type === "directory") {
+    mkdir(value.path)
+  } else if (value.type === "file") {
+    writeFile(value.path)
+  }
+}
 */
 
 async function input() {
