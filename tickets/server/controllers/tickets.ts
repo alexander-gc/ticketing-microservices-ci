@@ -49,10 +49,12 @@ const updateTicket = async (req: Request, res: Response) => {
   const ticket = await Ticket.findById(id);
 
   if (!ticket) throw new BadRequestError("Ticket does not exist");
-  if (ticket.userId != req.user!.id) throw new NotAuthorizedError();
+  if (ticket.userId !== req.user!.id) throw new NotAuthorizedError();
 
-  ticket.title = title ? title : ticket.title;
-  ticket.price = price ? price : ticket.price;
+  // ticket.set({ title, price }), await ticket.save();
+
+  ticket.title = title; //title ? title : ticket.title;
+  ticket.price = price; //price ? price : ticket.price;
   await ticket.save();
 
   return res.status(201).send(ticket);

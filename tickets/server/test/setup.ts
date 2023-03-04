@@ -35,7 +35,7 @@ afterAll(async () => {
 
 // To create a cookie manually
 global.getCookie = (id?: string, email?: string) => {
-  let payload;
+  let payload; // new mongoose.Types.ObjectId().toHexString
 
   id && email
     ? (payload = { id, email })

@@ -16,12 +16,14 @@ const createTicketValidator = [
 
 const updateTicketValidator = [
   body("title")
-    .optional()
+    .notEmpty()
+    .withMessage("Title is required")
     .trim()
-    .isLength({ max: 30 })
+    .isLength({ min: 4, max: 30 })
     .withMessage("Title must be valid"),
   body("price")
-    .optional()
+    .notEmpty()
+    .withMessage("Price is required")
     .isFloat({ gt: 0 })
     .withMessage("Price must be greater than 0"),
 ];

@@ -62,7 +62,7 @@ it("returns a 400 if the user provides an invalid title or price", async () => {
     .put(`/api/tickets/update/${id}`)
     .set("Cookie", global.getCookie())
     .send({
-      title: "1010100101oloedldoelodelodedelodoeldeoldelodeoldelodeol",
+      title: "",
       price: 10,
     })
     .expect(400);
