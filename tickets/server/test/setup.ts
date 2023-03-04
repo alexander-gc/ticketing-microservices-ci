@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import app from "../app";
 
 declare global {
-  var getCookie: () => string[];
+  var getCookie: (id?: string, email?: string) => string[];
 }
 
 let mongo: any;
@@ -34,8 +34,12 @@ afterAll(async () => {
 });
 
 // To create a cookie manually
-global.getCookie = () => {
-  const payload = { id: "12jfjf22", email: "test@test.com" };
+global.getCookie = (id?: string, email?: string) => {
+  let payload;
+
+  id && email
+    ? (payload = { id, email })
+    : (payload = { id: "12jfjf22", email: "test@random.com" });
 
   const token = jwt.sign(payload, process.env.JWT_KEY!);
 

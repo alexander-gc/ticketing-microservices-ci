@@ -14,4 +14,16 @@ const createTicketValidator = [
     .withMessage("Price must be greater than 0"),
 ];
 
-export { createTicketValidator };
+const updateTicketValidator = [
+  body("title")
+    .optional()
+    .trim()
+    .isLength({ max: 30 })
+    .withMessage("Title must be valid"),
+  body("price")
+    .optional()
+    .isFloat({ gt: 0 })
+    .withMessage("Price must be greater than 0"),
+];
+
+export { createTicketValidator, updateTicketValidator };

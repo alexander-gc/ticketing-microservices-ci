@@ -6,8 +6,6 @@ import { createTicketValidator } from "../validators/tickets";
 
 const router = Router();
 
-//router.post("/", signUpValidator, validateRequest, signUp);
-
 router.post(
   "/",
   requireAuth,

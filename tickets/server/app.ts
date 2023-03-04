@@ -8,6 +8,9 @@ import {
   currentUser,
 } from "@alexandergcorg/common";
 import { createTicketRouter } from "./routes/create-ticket";
+import { getTicketRouter } from "./routes/get-ticket";
+import { getListRouter } from "./routes/get-list";
+import { updateTicketRouter } from "./routes/update-ticket";
 
 const app = express();
 app.set("trust proxy", true);
@@ -22,6 +25,9 @@ app.use(
 app.use(currentUser); // req.user = { id, email } || null
 
 app.use("/api/tickets/create", createTicketRouter);
+app.use("/api/tickets/update", updateTicketRouter);
+app.use("/api/tickets/show", getListRouter);
+app.use("/api/tickets/show", getTicketRouter);
 
 app.get("/api/tickets/home", (req, res) => {
   res.status(200).send("Hi there!");
@@ -29,7 +35,6 @@ app.get("/api/tickets/home", (req, res) => {
 
 app.all("*", async (req: Request, res: Response) => {
   throw new NotFoundError();
-  //return next(new NotFoundError()); // with next() and async
 });
 
 app.use(errorHandler);
