@@ -6,8 +6,6 @@ import app from "../../app";
 it("returns a 400 if the ticket is not found", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
 
-  console.log(id);
-
   await request(app).get(`/api/tickets/show/${id}`).expect(400);
 });
 

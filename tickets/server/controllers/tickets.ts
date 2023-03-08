@@ -30,11 +30,15 @@ const getTicketById = async (req: Request, res: Response) => {
   const { id } = req.params;
   let ticket;
 
-  /*try { ticket = await Ticket.findById(id) } catch (error) { console.error(error) }*/
+  try {
+    ticket = await Ticket.findById(id);
+  } catch (error) {
+    console.error(error);
+  }
 
-  await Ticket.findById(id)
+  /*await Ticket.findById(id)
     .then((value) => (ticket = value))
-    .catch((e) => console.error(e));
+    .catch((e) => console.error(e));*/
 
   if (!ticket) throw new BadRequestError("Ticket does not exist or invalid id");
 
@@ -52,18 +56,24 @@ const updateTicket = async (req: Request, res: Response) => {
   const { id } = req.params;
   let ticket;
 
-  await Ticket.findById(id)
-    .then((value) => (ticket = value))
-    .catch((e) => console.error(e));
+  try {
+    ticket = await Ticket.findById(id);
+  } catch (error) {
+    console.error(error);
+  }
 
-  if (!ticket) throw new BadRequestError("Ticket does not exist");
-  if (ticket!.userId !== req.user!.id) throw new NotAuthorizedError();
+  /*await Ticket.findById(id)
+    .then((value) => (ticket = value))
+    .catch((e) => console.error(e));*/
+
+  if (!ticket) throw new BadRequestError("Ticket does not exist or invalid id");
+  if (ticket.userId !== req.user!.id) throw new NotAuthorizedError();
 
   // ticket.set({ title, price }), await ticket.save();
 
-  ticket!.title = title; //title ? title : ticket.title;
-  ticket!.price = price; //price ? price : ticket.price;
-  await ticket!.save();
+  ticket.title = title; //title ? title : ticket.title;
+  ticket.price = price; //price ? price : ticket.price;
+  await ticket.save();
 
   return res.status(201).send(ticket);
 };
