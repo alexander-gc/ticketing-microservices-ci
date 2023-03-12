@@ -1,6 +1,8 @@
 // To listen to events
-import nats, { Message } from "node-nats-streaming";
+import nats from "node-nats-streaming";
 import { randomBytes } from "crypto";
+
+import { TicketCreatedListener } from "./events/ticket-created-listener";
 
 console.clear();
 
@@ -17,23 +19,7 @@ stan.on("connect", () => {
     process.exit();
   });
 
-  const options = stan.subscriptionOptions().setManualAckMode(true); // acknowledge manually
-
-  const subscription = stan.subscribe(
-    "ticket:created",
-    "orders-service-queue-group",
-    options
-  );
-
-  subscription.on("message", (msg: Message) => {
-    const data = msg.getData();
-
-    if (typeof data === "string") {
-      console.log("Received event #" + msg.getSequence(), "with data: " + data);
-    }
-
-    msg.ack(); // has been acknowledged
-  });
+  new TicketCreatedListener(stan).listen();
 });
 
 // first it closes nats client and then closes the node app
