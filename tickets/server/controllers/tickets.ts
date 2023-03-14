@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import { BadRequestError, NotAuthorizedError } from "@alexandergcorg/common";
 import { Ticket } from "../models/Ticket";
+import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
 
 /*
 // de estas formas puedo agregar más props a una clase existente
@@ -22,6 +23,13 @@ const createTicket = async (req: Request, res: Response) => {
   });
 
   await ticket.save();
+
+  await new TicketCreatedPublisher("client").publish({
+    id: ticket.id,
+    title: ticket.title,
+    price: ticket.price,
+    userId: ticket.userId,
+  });
 
   return res.status(201).send(ticket);
 };
