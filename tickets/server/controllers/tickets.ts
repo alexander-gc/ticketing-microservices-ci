@@ -2,6 +2,8 @@ import { Response, Request } from "express";
 import { BadRequestError, NotAuthorizedError } from "@alexandergcorg/common";
 import { Ticket } from "../models/Ticket";
 import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 /*
 // de estas formas puedo agregar más props a una clase existente
@@ -24,7 +26,7 @@ const createTicket = async (req: Request, res: Response) => {
 
   await ticket.save();
 
-  await new TicketCreatedPublisher("client").publish({
+  await new TicketCreatedPublisher(natsWrapper.client).publish({
     id: ticket.id,
     title: ticket.title,
     price: ticket.price,
@@ -82,6 +84,13 @@ const updateTicket = async (req: Request, res: Response) => {
   ticket.title = title; //title ? title : ticket.title;
   ticket.price = price; //price ? price : ticket.price;
   await ticket.save();
+
+  new TicketUpdatedPublisher(natsWrapper.client).publish({
+    id: ticket.id,
+    title: ticket.title,
+    price: ticket.price,
+    userId: ticket.userId,
+  });
 
   return res.status(201).send(ticket);
 };
