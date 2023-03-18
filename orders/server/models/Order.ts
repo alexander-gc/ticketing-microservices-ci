@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
 import { OrderStatus } from "@alexandergcorg/common";
 
+import { TicketDoc } from "./Ticket";
+
 interface OrderAttrs {
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
-  //ticket: TicketDoc;
+  ticket: TicketDoc;
 }
 
 interface OrderModel extends mongoose.Model<OrderDoc> {
@@ -17,7 +19,7 @@ interface OrderDoc extends mongoose.Document {
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
-  //ticket: TicketDoc;
+  ticket: TicketDoc;
   createdAt: string;
   updatedAt: string;
 }
@@ -58,4 +60,4 @@ orderSchema.statics.build = (attrs: OrderAttrs): OrderDoc => new Order(attrs);
 
 const Order = mongoose.model<OrderDoc, OrderModel>("Order", orderSchema);
 
-export { Order };
+export { Order, OrderStatus };

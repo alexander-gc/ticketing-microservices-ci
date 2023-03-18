@@ -1,9 +1,9 @@
 import {
   Publisher,
   Subjects,
-  TicketCreatedEvent,
+  //OrderCreatedEvent
 } from "@alexandergcorg/common";
 
-export class OrderCreatedPublisher extends Publisher<TicketCreatedEvent> {
-  readonly subject: Subjects.TicketCreated = Subjects.TicketCreated;
-}
+/*export class OrderCreatedPublisher extends Publisher<OrderCreatedEvent> {
+  readonly subject: Subjects.OrderCreated = Subjects.OrderCreated;
+}*/

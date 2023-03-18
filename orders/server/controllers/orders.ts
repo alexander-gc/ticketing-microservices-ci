@@ -1,80 +1,99 @@
 import { Response, Request } from "express";
-import { BadRequestError, NotAuthorizedError } from "@alexandergcorg/common";
-//import { Order } from "../models/Orders";
-//import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+import {
+  BadRequestError,
+  NotAuthorizedError,
+  OrderStatus,
+} from "@alexandergcorg/common";
+
+import { Order } from "../models/Order";
+import { Ticket } from "../models/Ticket";
 import { natsWrapper } from "../nats-wrapper";
+//import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+//import { OrderCancelledPublisher } from "../events/publishers/order-created-publisher";
 
 const createOrder = async (req: Request, res: Response) => {
-  const {} = req.body;
+  const { ticketId } = req.body;
 
-  /*
+  const ticket = await Ticket.findById(ticketId);
+
+  if (!ticket) throw new BadRequestError("Ticket does not exist");
+
+  const isTicketReserved = await ticket.isReserved();
+
+  if (isTicketReserved) throw new BadRequestError("Ticket is already reserved");
+
+  const expiration = new Date(); // current date
+
+  expiration.setMinutes(expiration.getMinutes() + 15); // date with 15 more min
+
   const order = Order.build({
-    title,
-    price,
     userId: req.user!.id,
+    status: OrderStatus.Created,
+    expiresAt: expiration,
+    ticket: ticket,
   });
+  await order.save();
 
-  await order.save();*/
-
-  /*await new TicketCreatedPublisher(natsWrapper.client).publish({
-    id: ticket.id,
-    title: ticket.title,
-    price: ticket.price,
-    userId: ticket.userId,
+  /*await new OrderCreatedPublisher(natsWrapper.client).publish({
+    id: order.id;
+    userId: order.userId;
+    status: order.status;
+    expiresAt: order.status;
+    ticket: order.ticket;
   });*/
 
-  return res.status(201).send("order");
+  return res.status(201).send(order);
 };
 
 const getOrderById = async (req: Request, res: Response) => {
   const { id } = req.params;
   let order;
 
-  /*
   try {
-    order = await Order.findById(id);
+    order = await Order.findById(id).populate("ticket");
   } catch (error) {
     console.error(error);
   }
-  */
 
-  if (!order) throw new BadRequestError("Order does not exist or invalid id");
+  if (!order) throw new BadRequestError("Order does not exist");
+  if (req.user!.id !== order.userId) throw new NotAuthorizedError();
 
   return res.status(200).send(order);
 };
 
 const getOrders = async (req: Request, res: Response) => {
-  //const orders = await Order.find();
+  const orders = await Order.find({
+    userId: req.user!.id,
+  }).populate("ticket");
 
-  return res.status(200).send("orders");
+  return res.status(200).send(orders);
 };
 
-const deleteOrder = async (req: Request, res: Response) => {
+const cancelOrder = async (req: Request, res: Response) => {
   const { id } = req.params;
   let order;
 
-  /*
   try {
     order = await Order.findById(id);
   } catch (error) {
     console.error(error);
-  }*/
+  }
 
-  if (!order) throw new BadRequestError("Order does not exist or invalid id");
-  //if (order.userId !== req.user!.id) throw new NotAuthorizedError();
+  if (!order) throw new BadRequestError("Order does not exist");
+  if (req.user!.id !== order.userId) throw new NotAuthorizedError();
 
-  //order.status = '';
-  //await order.save();
+  order.status = OrderStatus.Cancelled;
+  await order.save();
 
   /*
-  new TicketUpdatedPublisher(natsWrapper.client).publish({
+  new OrderCancelledPublisher(natsWrapper.client).publish({
     id: ticket.id,
     title: ticket.title,
     price: ticket.price,
     userId: ticket.userId,
   });*/
 
-  return res.status(200).send("Order deleted");
+  return res.status(200).send(order);
 };
 
-export { createOrder, getOrderById, getOrders, deleteOrder };
+export { createOrder, getOrderById, getOrders, cancelOrder };

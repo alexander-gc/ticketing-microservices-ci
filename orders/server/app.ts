@@ -8,7 +8,7 @@ import {
   currentUser,
 } from "@alexandergcorg/common";
 import { createOrderRouter } from "./routes/create-order";
-import { deleteOrderRouter } from "./routes/delete-order";
+import { cancelOrderRouter } from "./routes/cancel-order";
 import { getListRouter } from "./routes/get-list";
 import { getOrderRouter } from "./routes/get-order";
 
@@ -25,7 +25,7 @@ app.use(
 app.use(currentUser); // req.user = { id, email } || null
 
 app.use("/api/orders/create", createOrderRouter);
-app.use("/api/orders/delete", deleteOrderRouter);
+app.use("/api/orders/cancel", cancelOrderRouter);
 app.use("/api/orders", getListRouter);
 app.use("/api/orders", getOrderRouter);
 
