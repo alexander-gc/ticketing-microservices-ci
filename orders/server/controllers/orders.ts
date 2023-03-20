@@ -8,8 +8,8 @@ import {
 import { Order } from "../models/Order";
 import { Ticket } from "../models/Ticket";
 import { natsWrapper } from "../nats-wrapper";
-//import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
-//import { OrderCancelledPublisher } from "../events/publishers/order-created-publisher";
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+import { OrderCancelledPublisher } from "../events/publishers/order-cancelled-publisher";
 
 const createOrder = async (req: Request, res: Response) => {
   const { ticketId } = req.body;
@@ -34,13 +34,16 @@ const createOrder = async (req: Request, res: Response) => {
   });
   await order.save();
 
-  /*await new OrderCreatedPublisher(natsWrapper.client).publish({
-    id: order.id;
-    userId: order.userId;
-    status: order.status;
-    expiresAt: order.status;
-    ticket: order.ticket;
-  });*/
+  new OrderCreatedPublisher(natsWrapper.client).publish({
+    id: order.id,
+    userId: order.userId,
+    status: order.status,
+    expiresAt: order.expiresAt.toISOString(),
+    ticket: {
+      id: ticket.id,
+      price: ticket.price,
+    },
+  });
 
   return res.status(201).send(order);
 };
@@ -74,7 +77,7 @@ const cancelOrder = async (req: Request, res: Response) => {
   let order;
 
   try {
-    order = await Order.findById(id);
+    order = await Order.findById(id).populate("ticket");
   } catch (error) {
     console.error(error);
   }
@@ -85,13 +88,10 @@ const cancelOrder = async (req: Request, res: Response) => {
   order.status = OrderStatus.Cancelled;
   await order.save();
 
-  /*
   new OrderCancelledPublisher(natsWrapper.client).publish({
-    id: ticket.id,
-    title: ticket.title,
-    price: ticket.price,
-    userId: ticket.userId,
-  });*/
+    id: order.id,
+    ticket: { id: order.ticket.id },
+  });
 
   return res.status(200).send(order);
 };

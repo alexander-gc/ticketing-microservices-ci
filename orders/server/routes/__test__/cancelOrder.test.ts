@@ -4,6 +4,7 @@ import request from "supertest";
 import app from "../../app";
 import { Ticket } from "../../models/Ticket";
 import { OrderStatus } from "../../models/Order";
+import { natsWrapper } from "../../nats-wrapper";
 
 it("returns an error if the order is not found", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
@@ -60,4 +61,19 @@ it("cancels successfully an order", async () => {
   expect(result.body.status).toEqual(OrderStatus.Cancelled);
 });
 
-it.todo("emits an order cancelled event");
+it("emits an order cancelled event", async () => {
+  const newTicket = Ticket.build({ title: "concert_1", price: 100 });
+  await newTicket.save();
+
+  const order = await request(app)
+    .post("/api/orders/create")
+    .set("Cookie", global.getCookie())
+    .send({ ticketId: newTicket.id });
+
+  const result = await request(app)
+    .delete(`/api/orders/cancel/${order.body.id}`)
+    .set("Cookie", global.getCookie());
+
+  expect(result.status).toEqual(200);
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
