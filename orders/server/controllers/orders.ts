@@ -36,6 +36,7 @@ const createOrder = async (req: Request, res: Response) => {
 
   new OrderCreatedPublisher(natsWrapper.client).publish({
     id: order.id,
+    version: order.version,
     userId: order.userId,
     status: order.status,
     expiresAt: order.expiresAt.toISOString(),
@@ -90,6 +91,7 @@ const cancelOrder = async (req: Request, res: Response) => {
 
   new OrderCancelledPublisher(natsWrapper.client).publish({
     id: order.id,
+    version: order.version,
     ticket: { id: order.ticket.id },
   });
 

@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 import app from "./app";
 import { natsWrapper } from "./nats-wrapper";
+import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
+import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 
 const startUp = async () => {
   // To create a secret by Kubernetes and then to specify it in a manifest
@@ -28,6 +30,10 @@ const startUp = async () => {
 
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
+
+    // TODO: to make some request from ticket services
+    new TicketCreatedListener(natsWrapper.client).listen();
+    new TicketUpdatedListener(natsWrapper.client).listen();
 
     mongoose.set("strictQuery", false);
     await mongoose.connect(process.env.MONGO_URI);

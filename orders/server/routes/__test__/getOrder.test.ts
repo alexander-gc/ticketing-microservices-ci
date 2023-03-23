@@ -25,7 +25,11 @@ it("returns an error if the user is not signed in", async () => {
 });
 
 it("returns an error if the order does not belong to that user", async () => {
-  const newTicket = Ticket.build({ title: "concert_1", price: 100 });
+  const newTicket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: "concert_1",
+    price: 100,
+  });
   await newTicket.save();
 
   const order = await request(app)
@@ -42,7 +46,11 @@ it("returns an error if the order does not belong to that user", async () => {
 });
 
 it("returns successfully an order", async () => {
-  const newTicket = Ticket.build({ title: "concert_1", price: 100 });
+  const newTicket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: "concert_1",
+    price: 100,
+  });
   await newTicket.save();
 
   const order = await request(app)

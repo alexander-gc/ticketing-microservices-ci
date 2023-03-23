@@ -5,7 +5,11 @@ import app from "../../app";
 import { Ticket } from "../../models/Ticket";
 
 const buildTicket = async (title: string, price: number) => {
-  const newTicket = Ticket.build({ title, price });
+  const newTicket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title,
+    price,
+  });
   await newTicket.save();
 
   return newTicket;

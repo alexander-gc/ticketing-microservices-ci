@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 import { Order, OrderStatus } from "./Order";
 
 interface TicketAttrs {
+  id: string;
   title: string;
   price: number;
 }
@@ -11,6 +13,7 @@ export interface TicketDoc extends mongoose.Document {
   id: string;
   title: string;
   price: number;
+  version: number;
   createdAt: string;
   updatedAt: string;
 
@@ -19,6 +22,10 @@ export interface TicketDoc extends mongoose.Document {
 
 interface TicketModel extends mongoose.Model<TicketDoc> {
   build(attrs: TicketAttrs): TicketDoc;
+  findByEvent(event: {
+    id: string;
+    version: number;
+  }): Promise<TicketDoc | null>;
 }
 
 const ticketSchema = new mongoose.Schema(
@@ -44,9 +51,21 @@ const ticketSchema = new mongoose.Schema(
   }
 );
 
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
+
+ticketSchema.statics.findByEvent = (event: { id: string; version: number }) => {
+  return Ticket.findOne({ _id: event.id, version: event.version - 1 });
+};
+
 // "statics" works for adding more custom methods directly to the ticket model itself. Ticket.build();
-ticketSchema.statics.build = (attrs: TicketAttrs): TicketDoc =>
-  new Ticket(attrs);
+ticketSchema.statics.build = (attrs: TicketAttrs): TicketDoc => {
+  return new Ticket({
+    _id: attrs.id,
+    title: attrs.title,
+    price: attrs.price,
+  });
+};
 
 // it works for adding a new method to a document (row). await ticket.isReserved();
 ticketSchema.methods.isReserved = async function () {
