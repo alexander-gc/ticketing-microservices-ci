@@ -31,6 +31,7 @@ const createTicket = async (req: Request, res: Response) => {
     title: ticket.title,
     price: ticket.price,
     userId: ticket.userId,
+    version: ticket.version,
   });
 
   return res.status(201).send(ticket);
@@ -90,6 +91,7 @@ const updateTicket = async (req: Request, res: Response) => {
     title: ticket.title,
     price: ticket.price,
     userId: ticket.userId,
+    version: ticket.version,
   });
 
   return res.status(201).send(ticket);
